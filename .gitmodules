@@ -1,0 +1,3 @@
+[submodule "generators/app/templates/react-app-template"]
+	path = generators/app/templates/react-app-template
+	url = git@github.com:voronindenis/react-app-template.git
