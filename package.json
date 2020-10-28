@@ -13,9 +13,8 @@
     "url": "git+https://github.com/voronindenis/react-app-generator.git"
   },
   "keywords": [
-    "generator",
-    "react",
-    "yeoman"
+    "yeoman-generator",
+    "react"
   ],
   "author": "Denis Voronin <mystimind@mail.ru>",
   "license": "UNLICENSED",
