@@ -1,14 +1,14 @@
 /* eslint-disable no-console */
 'use strict';
 
-// const { spawnSync } = require('child_process');
-// const semver = require('semver');
+const { spawnSync } = require('child_process');
+const semver = require('semver');
 const extend = require('lodash.merge');
 const Generator = require('yeoman-generator');
 const parseAuthor = require('parse-author');
 const path = require('path');
 const validatePackageName = require('validate-npm-package-name');
-// const localPackageJson = require('../../package.json');
+const localPackageJson = require('../../package.json');
 
 module.exports = class extends Generator {
   _askFor() {
@@ -48,16 +48,13 @@ module.exports = class extends Generator {
   initializing() {
     this.pkg = this.fs.readJSON(this.destinationPath('package.json'), {});
 
-    // todo: uncomment this after push to npm
-    // const show = spawnSync('npm', ['show', 'react-app-generator', 'version']);
-    // const genVersionFromNpm = show.stdout.toString().trim();
-    //
-    // if (semver.gt(genVersionFromNpm, localPackageJson.version)) {
-    //   console.log(
-    //     `There's an updated version of react-app-generator v${genVersionFromNpm} (you have ${localPackageJson.version})` +
-    //     ', please run "npm i -g react-app-generator" to upgrade');
-    //   process.exit(0);
-    // }
+    const show = spawnSync('npm', ['show', '@denis_voronin/generator-react-app', 'version']);
+    const genVersionFromNpm = show.stdout.toString().trim();
+    if (semver.gt(genVersionFromNpm, localPackageJson.version)) {
+      console.log(`There's an updated version of @denis_voronin/generator-react-app v${genVersionFromNpm} ` +
+        `(you have ${localPackageJson.version}), please run "npm i -g @denis_voronin/generator-react-app" to upgrade`);
+      process.exit(0);
+    }
 
     // Pre set the default props from the information we have at this point
     this.props = {
@@ -102,10 +99,6 @@ module.exports = class extends Generator {
   }
 
   writing() {
-    const r = this.fs.exists(this.templatePath('react-app-template/package.json'), (e) => e);
-    const p = this.templatePath('react-app-template/package.json');
-    process.emitWarning(r.toString());
-    process.emitWarning(p);
     this.fs.copy(
       this.templatePath('react-app-template/**'),
       this.destinationRoot(),
