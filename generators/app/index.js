@@ -42,18 +42,24 @@ module.exports = class extends Generator {
 
     return this.prompt(prompts).then(props => {
       this.props = extend(this.props, props);
+      const packageNameValidity = validatePackageName(this.props.name);
+      if (!packageNameValidity.validForNewPackages) {
+        const error = packageNameValidity.errors && packageNameValidity.errors[0] ||
+          'The name option is not a valid npm package name.';
+        console.log(error);
+        process.exit(1);
+      }
     });
   }
 
   initializing() {
     this.pkg = this.fs.readJSON(this.destinationPath('package.json'), {});
-
     const show = spawnSync('npm', ['show', '@denis_voronin/generator-react-app', 'version']);
     const genVersionFromNpm = show.stdout.toString().trim();
     if (semver.gt(genVersionFromNpm, localPackageJson.version)) {
       console.log(`There's an updated version of @denis_voronin/generator-react-app v${genVersionFromNpm} ` +
         `(you have ${localPackageJson.version}), please run "npm i -g @denis_voronin/generator-react-app" to upgrade`);
-      process.exit(0);
+      process.exit(1);
     }
 
     // Pre set the default props from the information we have at this point
@@ -64,23 +70,6 @@ module.exports = class extends Generator {
       homepage: this.pkg.homepage,
       repositoryName: this.options.repositoryName
     };
-
-    if (this.options.name) {
-      const name = this.options.name;
-      const packageNameValidity = validatePackageName(name);
-
-      if (packageNameValidity.validForNewPackages) {
-        this.props.name = name;
-      } else {
-        this.emit(
-          'error',
-          new Error(
-            packageNameValidity.errors[0] ||
-            'The name option is not a valid npm package name.'
-          )
-        );
-      }
-    }
 
     if (typeof this.pkg.author === 'object') {
       this.props.authorName = this.pkg.author.name;
